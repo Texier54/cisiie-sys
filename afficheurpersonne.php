@@ -1,6 +1,6 @@
 <?php
 
-class AfficheurPersonne
+abstract class AfficheurPersonne
 {
   
   public $personne;
@@ -10,15 +10,9 @@ class AfficheurPersonne
     $this->personne = $personne;
   }
 
-  public function vueCourte()
-  {
-    return "<div>Nom : ".$this->personne->nom."<br>Prenom : ".$this->personne->prenom."<br>Ville : ".$this->personne->ville."</div>";
-  }
+  abstract public function vueCourte();
 
-  public function vueDetail()
-  {
-    return "<div>Nom : ".$this->personne->nom."<br>Prenom : ".$this->personne->prenom."<br>Ville : ".$this->personne->ville."<br>Adresse : ".$this->personne->adresse."<br>Ville : ".$this->personne->ville."</div>";
-  }
+  abstract public function vueDetail();
 
   public function afficher($sel)
   {
