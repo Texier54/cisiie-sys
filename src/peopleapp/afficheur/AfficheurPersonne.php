@@ -1,4 +1,5 @@
 <?php
+	namespace peopleapp\afficheur;
 
 abstract class AfficheurPersonne
 {

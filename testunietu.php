@@ -1,98 +1,116 @@
 <?php
 
-require "personne.php";
-require "enseignant.php";
+require_once "src/peopleapp/personne/Personne.php";
+require_once "src/peopleapp/personne/Groupe.php";
+require_once "src/peopleapp/personne/Etudiant.php";
 
+class GroupeTest extends \PHPUnit_Framework_TestCase {
 
-class EnseignantTest extends PHPUnit_Framework_TestCase {
-
-    function testSubclass(){
-        $this->assertTrue(is_subclass_of('Enseignant', 'Personne'), 
-        "La classe Enseignant doit hÃ©riter pas de Personne");
-    }
-        
     function testProperties(){
-        $this->assertClassHasAttribute( 'discipline', 'Enseignant');
-        $this->assertClassHasAttribute( 'composante', 'Enseignant');
-        $this->assertClassHasAttribute( 'bureau'    , 'Enseignant');
-    }
-
-    function testVisibility(){
-        $prop = [ 'discipline' ,  'composante', 'bureau', 'conjoint' ];
-        
-        foreach ( $prop as $p ){
-            $rp = new ReflectionProperty('Enseignant', $p);
-            $this->assertTrue($rp->isProtected(),
-            'L\'attribut '.$p.' doit Ãªtre protÃ©gÃ©');
+        $attr = ['groupe', 'semestre', 'formation', 'liste'] ; 
+    
+        foreach( $attr as $a){
+            $this->assertClassHasAttribute($a, 'peopleapp\personne\Groupe',
+            'La classe Groupe doit avoir un attribut '.$a);
         }
     }
-   
-    function testMagic(){
-        $this->assertTrue(method_exists('Enseignant', '__set'), 
-        "La classe Enseignant n'a pas de mÃ©thode __set");
 
-        $this->assertTrue(method_exists('Enseignant', '__get'), 
-        "La classe Enseignant n'a pas de mÃ©thode __get");
-    }
-
-    function testAjoutyerConjointExists(){
-        $this->assertTrue(method_exists('Enseignant', 'ajouterConjoint'), 
-        "La classe Enseignant doit avoir une de mÃ©thode ajouterConjoint");
-    }
-    
-    private function createEnseignant(){
-        $p = new Enseignant('Jagger');
-        $p->prenom='Mick';
-        $p->age=23;
-        $p->adresse='5 ave of the Rock';
-        $p->ville='Dartford';
-        $p->codepostal=90210;
-        $p->mail='mick.jagger@rolingstones.com';
-        $p->mobile='+41 6 12 34 56 78';
-        $p->idskype='jagsir';
+    function testMethodsExist(){
+        $mth = [ 'ajouterEtudiant' , 'calculerMoyenneGroupeMat',
+        'calculerMoyenneGroupe' ];
         
-        $p->discipline='Chant';
-        $p->composante='IUT charlemagne';
-        $p->bureau='A-230';
-
-        return $p;
+        foreach ( $mth as $m ){
+            $this->assertTrue(method_exists('peopleapp\personne\Groupe', $m), 
+            "La classe Groupe doit avoir une mÃ©thodes $m");
+        }
     }
- 
-  function testEnseignant(){
-    $p1 = new Enseignant('Jagger');
-    $this->assertEquals($p1->nom, 'Jagger');
-  }
-  
-  function testPropertiesValues(){
-    $p1 = $this->createEnseignant();
     
-    $this->assertEquals($p1->prenom, 'Mick');
-    $this->assertEquals($p1->age, 23);
-    $this->assertEquals($p1->adresse, '5 ave of the Rock');
-    $this->assertEquals($p1->ville, 'Dartford');
-    $this->assertEquals($p1->codepostal, 90210);
-    $this->assertEquals($p1->mail, 'mick.jagger@rolingstones.com');
-    $this->assertEquals($p1->mobile, '+41 6 12 34 56 78');
-    $this->assertEquals($p1->idskype, 'jagsir');
-    
-    $this->assertEquals($p1->discipline, 'Chant');
-    $this->assertEquals($p1->composante, 'IUT charlemagne');
-    $this->assertEquals($p1->bureau, 'A-230');
-  }
+    function testAjouterEtudiant() {
+        $p1 = new \peopleapp\personne\Etudiant('Jagger');
+        $g = new \peopleapp\personne\Groupe('G1', 'S1', 'Cisiie');
 
-  function testCompter(){
-    $p = new Enseignant('toto');
+        $g->ajouterEtudiant($p1);
+
+        $this->assertTrue(gettype($g->liste) == 'array',
+            'L\'attibut liste de la classe Groupe doit etre un tableau');
+
+        $this->assertContains($p1, $g->liste,
+        'Il y a un probleme avec l\'ajout des objets Etudiant dans le tableau');
+    }
+
+    function testcalCalculerMoyenneGroupeMat(){
+        $p1 = new \peopleapp\personne\Etudiant('Jagger');
+        $p2 = new \peopleapp\personne\Etudiant('Richards');
+        $p3 = new \peopleapp\personne\Etudiant('Watts');
+        $p4 = new \peopleapp\personne\Etudiant('Wood');
+        $p5 = new \peopleapp\personne\Etudiant('Taylor');
+
+        $p1->ajouterNote('math',10);
+        $p1->ajouterNote('math',12);
+        $p1->ajouterNote('math',14);
+        $p1->ajouterNotes('info', '10;14.5;8;16');
+        
+        $p2->ajouterNotes('info', '11.5;12.5;5;5');
+        $p2->ajouterNotes('math', '2;4.5;3;10');
+        
+        $p3->ajouterNotes('info', '4;7;12;12;8');
+        $p3->ajouterNotes('math', '12;14;12;11');
+        
+        $p4->ajouterNotes('info', '10;17;12.5;13');
+        $p4->ajouterNotes('math', '14;18;11;14.5');
+        
+        $p5->ajouterNotes('info', '1;3;4.5;1');
+        $p5->ajouterNotes('math', '0;0;1;2');
+        
+        $g = new \peopleapp\personne\Groupe('G1', 'S1', 'Cisiie');
+
+        $g->ajouterEtudiant($p1);
+        $g->ajouterEtudiant($p1);
+        $g->ajouterEtudiant($p2);
+        $g->ajouterEtudiant($p3);
+        $g->ajouterEtudiant($p4);
+        $g->ajouterEtudiant($p5);
+
+        
+        $res = $g->calculerMoyenneGroupe('noms');
+        $this->assertTrue(gettype($res)=='array',
+        'calculerMoyenneGroupe doit retourner un tableau');
+
+        $this->assertCount(5, $res,
+        'Le tableau retournÃ© par calculerMoyenneGroupe doit contenir une entrÃ©e pour chaque etudiant');
+
+
+        $vrai = [
+            'Jagger' => 12.07,
+            'Richards' => 6.69,
+            'Taylor' => 1.57,
+            'Watts' => 10.43,
+            'Wood' => 13.76];
+        
+        $this->assertEquals($vrai, $res,
+        'Il ya un souscis avec le calcul de la moyenne groupe ou le tri par nom.');
+         $vrai = [ 
+             'Wood' => 13.76, 
+             'Jagger' => 12.07,
+             'Watts' => 10.43,
+             'Richards' => 6.69,
+             'Taylor' => 1.57
+         ];
+
+         $res = $g->calculerMoyenneGroupe('notes');
+         $this->assertEquals($vrai, $res,
+        'Il ya un souscis avec le calcul de la moyenne groupe ou le tri par notes.');
+        
+
+        
+        
+         
+    }
+        
+
+
     
-    $this->assertThat($p->compter(5),
-		      $this->logicalOr($this->equalTo('0 1 2 3 4 5')  ,
-				       $this->equalTo('0 1 2 3 4 5 ') , 
-				       $this->equalTo("0\n1\n2\n3\n4\n5\n") ,
-				       $this->equalTo("0\n1\n2\n3\n4\n5"),
-				       $this->equalTo('0 1 2 3 4 5\n')  ,
-				       $this->equalTo('0 1 2 3 4 5 \n')  
-				       ));
-    
-  }
+
 
 
 }

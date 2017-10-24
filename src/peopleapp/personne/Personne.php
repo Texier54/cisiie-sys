@@ -1,5 +1,7 @@
 <?php
 
+namespace peopleapp\personne;
+
 abstract class personne
 {
   protected $nom;
@@ -22,6 +24,9 @@ abstract class personne
 
   public function __set($name, $value)
   {
+    if(property_exists($this, $name) != 1)
+	throw new \Exception('L\'atribut n\'éxiste pas');
+
     $this->$name=$value;
   }
 

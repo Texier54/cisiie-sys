@@ -1,6 +1,7 @@
 <?php
+	namespace peopleapp\personne;
 
-	class Enseignant extends personne
+	class Enseignant extends Personne
 	{
 		public $discipline="zdzdzd";
 		public $composante="qzdqzd";

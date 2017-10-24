@@ -1,6 +1,7 @@
 <?php
-require "afficheurpersonne.php";
-	class afficheurenseignant extends afficheurpersonne
+	namespace peopleapp\afficheur;
+
+	class afficheurenseignant extends AfficheurPersonne
 	{
 		function vueCourte()
 		{

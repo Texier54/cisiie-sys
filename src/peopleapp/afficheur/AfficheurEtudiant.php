@@ -1,6 +1,8 @@
 <?php
 
-	class afficheuretudiant extends afficheurpersonne
+	namespace peopleapp\afficheur;
+
+	class afficheuretudiant extends AfficheurPersonne
 	{
 		function vueCourte()
 		{
